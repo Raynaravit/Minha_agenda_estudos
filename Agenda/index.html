@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevAgenda CLI — Estudo & Aprendizado Didático</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-[#0d1117] text-[#c9d1d9] min-h-screen flex flex-col font-sans selection:bg-[#58a6ff]/30 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-[#30363d] bg-[#161b22] px-4 py-3 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      
+      <!-- Brand & Personas Highlight -->
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-lg bg-[#21262d] border border-[#30363d] flex items-center justify-center text-[#58a6ff] font-mono font-bold text-sm shadow">
+          $_
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-white text-base tracking-tight font-mono">dev-agenda</h1>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#238636]/20 text-[#3fb950] border border-[#238636]/50">gh-cli pattern</span>
+            <span class="hidden md:inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-950/70 text-blue-300 border border-blue-800">
+              ⚡ Marcus Vance: API REST Ativa
+            </span>
+          </div>
+          <p class="text-xs text-gray-400">Integração nativa com a GitHub API (REST) &amp; Aprendizado Didático</p>
+        </div>
+      </div>
+
+      <!-- Header Controls: Didactic Toggle, GitHub API Explorer, Add Task, Deploy Modal -->
+      <div class="flex items-center flex-wrap gap-2">
+        
+        <!-- Toggle Modo Didático -->
+        <button id="btn-toggle-didactic" class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#21262d] hover:bg-[#30363d] text-yellow-300 border border-yellow-700/50 transition">
+          <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+          <span id="label-didactic-mode">Modo Didático: ATIVO</span>
+        </button>
+
+        <!-- NOVO: Botão GitHub API Inspector (Desafio QA) -->
+        <button id="btn-open-api-modal" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#1f6feb] hover:bg-[#388bfd] text-white transition shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub API (Desafio QA)
+        </button>
+
+        <button id="btn-open-task-modal" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white transition shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Nova Atividade
+        </button>
+
+        <button id="btn-open-deploy" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#21262d] hover:bg-[#30363d] text-gray-200 border border-[#30363d] transition">
+          <svg class="w-3.5 h-3.5 text-[#58a6ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          Hospedar Grátis
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Metrics Bar -->
+  <section class="border-b border-[#30363d] bg-[#0d1117] px-4 py-2.5">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+      <div class="flex items-center space-x-2 bg-[#161b22] px-3 py-2 rounded-lg border border-[#30363d]">
+        <span class="text-gray-400">Total de Atividades:</span>
+        <span id="stat-total" class="font-bold text-white font-mono">0</span>
+      </div>
+      <div class="flex items-center space-x-2 bg-[#161b22] px-3 py-2 rounded-lg border border-[#30363d]">
+        <span class="text-gray-400">Concluídas:</span>
+        <span id="stat-completed" class="font-bold text-green-400 font-mono">0</span>
+      </div>
+      <div class="flex items-center space-x-2 bg-[#161b22] px-3 py-2 rounded-lg border border-[#30363d]">
+        <span class="text-gray-400">Progresso Geral:</span>
+        <span id="stat-progress" class="font-bold text-[#58a6ff] font-mono">0%</span>
+      </div>
+      <div class="flex items-center space-x-2 bg-[#161b22] px-3 py-2 rounded-lg border border-[#30363d]">
+        <span class="text-gray-400">Próxima Entrega:</span>
+        <span id="stat-next-due" class="font-bold text-yellow-400 font-mono">-</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Didactic Command Inspector (O Coração Pedagógico do Projeto) -->
+  <section id="didactic-panel" class="bg-[#161b22]/90 border-b border-[#30363d] px-4 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+      
+      <!-- Visual Action Label -->
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="px-2 py-0.5 rounded bg-blue-500/20 text-[#58a6ff] font-bold text-[10px] uppercase font-mono tracking-wider">
+          Ação na Tela
+        </span>
+        <span id="didactic-action-label" class="text-gray-200 font-semibold">
+          Visualizando lista de tarefas
+        </span>
+      </div>
+
+      <!-- Corresponding CLI Command Box -->
+      <div class="flex items-center gap-2 font-mono bg-[#0d1117] px-3 py-1.5 rounded-lg border border-[#30363d] text-xs w-full md:w-auto shadow-inner">
+        <span class="text-gray-500 font-bold">$</span>
+        <span id="didactic-cmd-display" class="text-[#58a6ff] font-bold select-all">agenda task list</span>
+        <button id="btn-copy-didactic" class="text-gray-400 hover:text-white ml-2 text-xs transition" title="Copiar comando">
+          📋
+        </button>
+      </div>
+
+      <!-- Pedagogical Breakdown -->
+      <div class="text-gray-300 text-xs flex items-center gap-2">
+        <span class="text-yellow-400 text-sm">💡</span>
+        <div id="didactic-explanation" class="leading-relaxed">
+          <strong class="text-yellow-300">Explicação Didática:</strong> O comando lista todos os itens cadastrados no formato tabular com cores de status.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Quick Command Chips Bar -->
+  <section class="border-b border-[#30363d]/60 bg-[#0d1117] px-4 py-2">
+    <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto text-[11px] font-mono">
+      <span class="text-gray-500 font-sans font-semibold shrink-0">Comandos Didáticos:</span>
+      <span class="cmd-chip px-2.5 py-1 rounded-md bg-[#161b22] border border-[#30363d] text-gray-300" data-cmd="agenda api zen" title="Testar endpoint zen da GitHub API">agenda api zen</span>
+      <span class="cmd-chip px-2.5 py-1 rounded-md bg-[#161b22] border border-[#30363d] text-gray-300" data-cmd="agenda github import --repo octocat/Hello-World" title="Importar issues reais de repositório">agenda github import --repo octocat/Hello-World</span>
+      <span class="cmd-chip px-2.5 py-1 rounded-md bg-[#161b22] border border-[#30363d] text-gray-300" data-cmd="agenda task list" title="Ver tabela de tarefas">agenda task list</span>
+      <span class="cmd-chip px-2.5 py-1 rounded-md bg-[#161b22] border border-[#30363d] text-gray-300" data-cmd="agenda stats" title="Estatísticas com gráfico ASCII">agenda stats</span>
+      <span class="cmd-chip px-2.5 py-1 rounded-md bg-[#161b22] border border-[#30363d] text-gray-300" data-cmd="agenda reset" title="Restaurar tarefas padrão de SQL">agenda reset</span>
+      <span class="cmd-chip px-2.5 py-1 rounded-md bg-[#161b22] border border-[#30363d] text-gray-300" data-cmd="clear" title="Limpar terminal (Ctrl+L)">clear</span>
+    </div>
+  </section>
+
+  <!-- Main Content Layout (Terminal + Synchronized Live Board) -->
+  <main class="max-w-7xl mx-auto p-4 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-5">
+    
+    <!-- LEFT: Web Terminal (GitHub CLI style) -->
+    <div class="lg:col-span-6 flex flex-col h-[640px]">
+      <div id="terminal-container" class="terminal-window bg-[#0d1117] border border-[#30363d] rounded-xl flex flex-col h-full overflow-hidden shadow-2xl">
+        <!-- Terminal Titlebar -->
+        <div class="bg-[#161b22] border-b border-[#30363d] px-4 py-2.5 flex items-center justify-between select-none">
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full bg-[#ff5f56] inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-[#27c93f] inline-block"></span>
+            <span class="text-xs font-mono text-gray-400 ml-2">gh-agenda-cli ~ zsh (80x24)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#21262d] text-gray-400">Ctrl+L = Limpar</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#21262d] text-gray-400">Tab = Auto</span>
+          </div>
+        </div>
+
+        <!-- Terminal Output Scroll Area -->
+        <div id="terminal-scroll" class="flex-1 p-4 overflow-y-auto font-mono text-xs text-gray-300 bg-[#0d1117]">
+          <div id="terminal-output"></div>
+        </div>
+
+        <!-- Terminal Active Input Line -->
+        <div class="bg-[#161b22]/90 border-t border-[#30363d] p-3 flex items-center font-mono text-xs">
+          <span class="text-[#58a6ff] font-bold shrink-0 mr-2">dev-agenda $</span>
+          <input 
+            type="text" 
+            id="terminal-input" 
+            class="flex-1 bg-transparent border-none outline-none text-white font-mono placeholder-gray-600 caret-[#58a6ff]" 
+            placeholder="digite comandos (ex: agenda api zen ou agenda github import --repo octocat/Hello-World)..." 
+            autocomplete="off" 
+            spellcheck="false"
+            autofocus
+          />
+          <span class="cli-cursor ml-1"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Live Study Dashboard (Kanban / Table) -->
+    <div class="lg:col-span-6 flex flex-col h-[640px]">
+      <div class="bg-[#161b22] border border-[#30363d] rounded-xl flex flex-col h-full overflow-hidden shadow-lg">
+        
+        <!-- Dashboard Header & Switcher -->
+        <div class="p-3 border-b border-[#30363d] flex items-center justify-between bg-[#161b22]">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+            <h2 class="text-sm font-semibold text-white font-mono">Quadro de Estudos Interativo</h2>
+          </div>
+          <div class="flex items-center space-x-1 bg-[#0d1117] p-1 rounded-lg border border-[#30363d]">
+            <button id="btn-view-kanban" class="px-2.5 py-1 text-xs rounded font-medium bg-[#21262d] text-[#58a6ff] transition">
+              Kanban
+            </button>
+            <button id="btn-view-table" class="px-2.5 py-1 text-xs rounded font-medium text-gray-400 hover:text-white transition">
+              Tabela
+            </button>
+          </div>
+        </div>
+
+        <!-- View 1: Kanban Board -->
+        <div id="kanban-view" class="flex-1 p-3 overflow-y-auto grid grid-cols-1 md:grid-cols-3 gap-3">
+          
+          <!-- Column 1: TODO -->
+          <div class="bg-[#0d1117] border border-[#30363d] rounded-lg p-2.5 flex flex-col kanban-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="text-xs font-bold text-gray-300">A Fazer</span>
+              </div>
+              <span id="count-todo" class="text-[11px] font-mono font-bold bg-[#21262d] px-2 py-0.5 rounded text-gray-300">0</span>
+            </div>
+            <div id="col-todo-list" class="space-y-2.5 flex-1 overflow-y-auto"></div>
+          </div>
+
+          <!-- Column 2: IN PROGRESS -->
+          <div class="bg-[#0d1117] border border-[#30363d] rounded-lg p-2.5 flex flex-col kanban-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                <span class="text-xs font-bold text-gray-300">Em Curso</span>
+              </div>
+              <span id="count-inprogress" class="text-[11px] font-mono font-bold bg-[#21262d] px-2 py-0.5 rounded text-yellow-400">0</span>
+            </div>
+            <div id="col-inprogress-list" class="space-y-2.5 flex-1 overflow-y-auto"></div>
+          </div>
+
+          <!-- Column 3: DONE -->
+          <div class="bg-[#0d1117] border border-[#30363d] rounded-lg p-2.5 flex flex-col kanban-col">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                <span class="text-xs font-bold text-gray-300">Concluídas</span>
+              </div>
+              <span id="count-done" class="text-[11px] font-mono font-bold bg-[#21262d] px-2 py-0.5 rounded text-green-400">0</span>
+            </div>
+            <div id="col-done-list" class="space-y-2.5 flex-1 overflow-y-auto"></div>
+          </div>
+
+        </div>
+
+        <!-- View 2: Table View -->
+        <div id="table-view" class="hidden flex-1 p-3 overflow-y-auto">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-[#30363d] text-gray-400 text-xs font-semibold">
+                  <th class="py-2 px-3">ID</th>
+                  <th class="py-2 px-3">Status</th>
+                  <th class="py-2 px-3">Título</th>
+                  <th class="py-2 px-3">Tags</th>
+                  <th class="py-2 px-3">Prioridade</th>
+                  <th class="py-2 px-3">Data</th>
+                  <th class="py-2 px-3 text-right">Ações Didáticas</th>
+                </tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bottom Status Bar -->
+        <div class="border-t border-[#30363d] px-3 py-2 bg-[#0d1117] flex items-center justify-between text-[11px] text-gray-500 font-mono">
+          <span>Persistência: localStorage ativo</span>
+          <span>Sincronização em tempo real com o Terminal</span>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: GITHUB REST API INSPECTOR & IMPORTADOR DIDÁTICO (Desafio QA) -->
+  <div id="api-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 modal-backdrop">
+    <div class="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-2xl w-full p-6 text-gray-200 shadow-2xl relative max-h-[90vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-[#30363d] mb-4 shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-[#1f6feb]/20 border border-[#1f6feb] flex items-center justify-center text-[#58a6ff]">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+              GitHub REST API Inspector &amp; Importador
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-purple-900/60 text-purple-300 border border-purple-700">Desafio QA</span>
+            </h3>
+            <p class="text-[11px] text-gray-400">Valide requisições HTTP reais, status codes, latência e rate limits da GitHub API</p>
+          </div>
+        </div>
+        <button id="btn-close-api-modal" class="text-gray-400 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="space-y-4 text-xs overflow-y-auto flex-1 pr-1">
+        
+        <!-- Controls: Repositório & Presets -->
+        <div class="bg-[#0d1117] p-3 rounded-xl border border-[#30363d] space-y-2.5">
+          <label class="block text-gray-300 font-semibold text-[11px]">Selecione ou digite um repositório do GitHub (owner/repo):</label>
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="api-repo-input" 
+              class="flex-1 bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:border-[#58a6ff]" 
+              placeholder="ex: octocat/Hello-World ou facebook/react" 
+              value="octocat/Hello-World"
+            />
+            <button id="btn-fetch-api" class="px-4 py-2 bg-[#1f6feb] hover:bg-[#388bfd] text-white font-semibold rounded-lg transition flex items-center gap-1.5 shrink-0">
+              <span id="api-btn-spinner" class="hidden animate-spin">⏳</span>
+              <span>Testar Requisição HTTP</span>
+            </button>
+          </div>
+
+          <!-- Presets rápidos para o QA testar diferentes cenários -->
+          <div class="flex items-center gap-1.5 flex-wrap text-[10px] text-gray-400">
+            <span class="font-semibold text-gray-500">Presets de Teste:</span>
+            <button type="button" class="btn-api-preset px-2 py-0.5 rounded bg-[#21262d] hover:bg-[#30363d] text-cyan-300 border border-[#30363d]" data-repo="octocat/Hello-World">octocat/Hello-World (Sucesso 200)</button>
+            <button type="button" class="btn-api-preset px-2 py-0.5 rounded bg-[#21262d] hover:bg-[#30363d] text-yellow-300 border border-[#30363d]" data-repo="microsoft/vscode">microsoft/vscode (Muitas Issues)</button>
+            <button type="button" class="btn-api-preset px-2 py-0.5 rounded bg-[#21262d] hover:bg-[#30363d] text-red-300 border border-[#30363d]" data-repo="usuario-inexistente-qa/repo-404">Cenário 404 (Erro Not Found)</button>
+          </div>
+        </div>
+
+        <!-- Telemetria HTTP (Status, Latência, RateLimit) -->
+        <div class="grid grid-cols-3 gap-2.5 text-xs font-mono">
+          <div class="p-2.5 bg-[#0d1117] border border-[#30363d] rounded-lg">
+            <span class="text-gray-500 block text-[10px]">HTTP Status</span>
+            <span id="api-status-badge" class="font-bold text-gray-400 text-sm">-- AGUARDANDO --</span>
+          </div>
+          <div class="p-2.5 bg-[#0d1117] border border-[#30363d] rounded-lg">
+            <span class="text-gray-500 block text-[10px]">Latência de Rede</span>
+            <span id="api-latency-badge" class="font-bold text-[#58a6ff] text-sm">0 ms</span>
+          </div>
+          <div class="p-2.5 bg-[#0d1117] border border-[#30363d] rounded-lg">
+            <span class="text-gray-500 block text-[10px]">Rate Limit (X-Remaining)</span>
+            <span id="api-ratelimit-badge" class="font-bold text-yellow-400 text-sm">60 / 60</span>
+          </div>
+        </div>
+
+        <!-- Prévia da Resposta JSON ou Erro -->
+        <div class="bg-[#090d13] border border-[#30363d] rounded-lg p-3">
+          <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#30363d]/60 text-[11px] text-gray-400">
+            <span class="font-mono text-cyan-400">Endpoint: <span id="api-endpoint-url">https://api.github.com/repos/...</span></span>
+            <span id="api-items-count" class="font-semibold text-gray-300">0 itens</span>
+          </div>
+          <pre id="api-json-preview" class="font-mono text-[11px] text-gray-300 max-h-40 overflow-y-auto whitespace-pre-wrap leading-relaxed">
+Clique em "Testar Requisição HTTP" para disparar a chamada para a GitHub API e analisar a resposta.
+          </pre>
+        </div>
+
+        <!-- Didactic CLI equivalence -->
+        <div class="p-3 bg-[#161b22] border border-[#30363d] rounded-lg font-mono text-[11px]">
+          <span class="text-gray-500 block mb-1 font-sans font-semibold">Comando Equivalente no Terminal:</span>
+          <div id="api-cli-cmd" class="text-[#58a6ff] bg-[#0d1117] p-2 rounded border border-[#30363d] font-bold">
+            agenda github import --repo octocat/Hello-World --limit 3
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="pt-3 border-t border-[#30363d] flex items-center justify-between shrink-0">
+        <span class="text-[11px] text-gray-500">A API pública do GitHub permite 60 requisições/hora por IP.</span>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btn-cancel-api-modal" class="px-3.5 py-1.5 bg-[#21262d] hover:bg-[#30363d] text-gray-300 text-xs font-semibold rounded-lg border border-[#30363d]">
+            Fechar
+          </button>
+          <button type="button" id="btn-import-issues-now" class="px-4 py-1.5 bg-[#238636] hover:bg-[#2ea043] text-white text-xs font-semibold rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 shadow" disabled>
+            <span>📥 Importar como Tarefas de Estudo</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DIDÁTICO: Formulário Visual com Gerador de Código CLI em Tempo Real -->
+  <div id="task-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 modal-backdrop">
+    <div class="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-xl w-full p-6 text-gray-200 shadow-2xl relative">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-[#30363d] mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-[#238636]/20 border border-[#238636] flex items-center justify-center text-green-400 text-sm font-bold">
+            +
+          </div>
+          <div>
+            <h3 id="modal-task-heading" class="text-sm font-bold text-white font-mono">Nova Atividade de Estudo</h3>
+            <p class="text-[11px] text-gray-400">Preencha visualmente e observe a linha de comando ser montada</p>
+          </div>
+        </div>
+        <button id="btn-close-task-modal" class="text-gray-400 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+
+      <!-- Modal Body (Form Fields) -->
+      <form id="task-form" class="space-y-3.5 text-xs">
+        <input type="hidden" id="form-task-id" value="" />
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Título da Atividade *</label>
+          <input 
+            type="text" 
+            id="form-title" 
+            class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-white outline-none focus:border-[#58a6ff] transition" 
+            placeholder="Ex: Praticar Normalização de Tabelas (3FN)" 
+            required 
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">Status</label>
+            <select id="form-status" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-white outline-none focus:border-[#58a6ff]">
+              <option value="todo">A Fazer (todo)</option>
+              <option value="in-progress">Em Curso (in-progress)</option>
+              <option value="done">Concluída (done)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">Prioridade</label>
+            <select id="form-priority" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-white outline-none focus:border-[#58a6ff]">
+              <option value="low">Baixa (low)</option>
+              <option value="medium" selected>Média (medium)</option>
+              <option value="high">Alta (high)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">Tags (separadas por vírgula)</label>
+            <input 
+              type="text" 
+              id="form-tags" 
+              class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-white outline-none focus:border-[#58a6ff]" 
+              placeholder="sql, joins, performance" 
+            />
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">Data Limite (Due Date)</label>
+            <input 
+              type="date" 
+              id="form-due" 
+              class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-white outline-none focus:border-[#58a6ff]" 
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">Anotações / Observações</label>
+          <textarea 
+            id="form-notes" 
+            rows="2" 
+            class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-white outline-none focus:border-[#58a6ff]" 
+            placeholder="Detalhes ou comandos SQL a praticar..."
+          ></textarea>
+        </div>
+
+        <!-- O Bloco Didático: O Código CLI que foi gerado -->
+        <div class="terminal-code-preview rounded-lg p-3 pt-3.5 mt-3">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-gray-400 font-mono text-[11px]">$</span>
+            <span class="text-[10px] text-gray-400 font-sans">Sincronização em tempo real</span>
+          </div>
+          <div id="modal-live-command" class="font-mono text-xs text-[#58a6ff] font-bold break-all bg-[#000000]/50 p-2 rounded border border-[#30363d]">
+            agenda task create --title "..." --priority medium
+          </div>
+          <div id="modal-cmd-explanation" class="text-[11px] text-gray-400 mt-2 border-t border-[#30363d]/60 pt-2 leading-relaxed">
+            🎓 <strong>Como o CLI lê este comando:</strong> <code class="text-white">agenda</code> inicia o programa, <code class="text-white">task create</code> invoca a criação e as flags <code class="text-cyan-300">--title</code> e <code class="text-cyan-300">--priority</code> transmitem seus valores.
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-task-modal" class="px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-gray-300 text-xs font-semibold rounded-lg border border-[#30363d] transition">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-[#238636] hover:bg-[#2ea043] text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow">
+            <span>🚀 Executar Comando &amp; Salvar</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Guia de Hospedagem Web Grátis -->
+  <div id="deploy-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 modal-backdrop">
+    <div class="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-2xl w-full p-6 text-gray-200 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 border-b border-[#30363d] mb-4">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-[#58a6ff]"></span>
+          <h3 class="text-base font-bold text-white font-mono">Guia de Deploy Web Gratuito (Zero Custos)</h3>
+        </div>
+        <button id="btn-close-deploy" class="text-gray-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-4 text-xs leading-relaxed">
+        <div class="p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <h4 class="font-bold text-[#58a6ff] text-sm mb-1">Opção 1: Vercel (Recomendado - 2 minutos)</h4>
+          <ol class="list-decimal list-inside space-y-1 text-gray-300">
+            <li>Crie uma conta gratuita em <a href="https://vercel.com" target="_blank" class="text-cyan-400 underline">vercel.com</a></li>
+            <li>Suba esta pasta para um repositório no seu GitHub (ex: <code class="bg-[#21262d] px-1 py-0.5 rounded text-white">dev-agenda</code>).</li>
+            <li>No painel da Vercel, clique em <strong>"Add New... > Project"</strong> e selecione o repositório.</li>
+            <li>Clique em <strong>"Deploy"</strong> (sem precisar de build command nem configurações extras).</li>
+            <li>Sua agenda estará no ar com link público HTTPS gratuito!</li>
+          </ol>
+        </div>
+
+        <div class="p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <h4 class="font-bold text-[#3fb950] text-sm mb-1">Opção 2: GitHub Pages (Direto no GitHub)</h4>
+          <ol class="list-decimal list-inside space-y-1 text-gray-300">
+            <li>No repositório do seu GitHub onde estão os arquivos (<code class="bg-[#21262d] px-1 py-0.5 rounded text-white">index.html</code>, <code class="bg-[#21262d] px-1 py-0.5 rounded text-white">styles.css</code>, <code class="bg-[#21262d] px-1 py-0.5 rounded text-white">app.js</code>):</li>
+            <li>Acesse a aba <strong>Settings &gt; Pages</strong>.</li>
+            <li>Em <em>Branch</em>, escolha <code class="bg-[#21262d] px-1 py-0.5 rounded text-white">main</code> e a pasta <code class="bg-[#21262d] px-1 py-0.5 rounded text-white">/ (root)</code> e clique em <strong>Save</strong>.</li>
+            <li>Em instantes, o link <code class="text-cyan-400">https://seu-usuario.github.io/dev-agenda</code> estará ativo.</li>
+          </ol>
+        </div>
+
+        <div class="p-3 bg-[#0d1117] border border-[#30363d] rounded-lg">
+          <h4 class="font-bold text-yellow-400 text-sm mb-1">Opção 3: Netlify Drop (Sem Git, Instantâneo)</h4>
+          <ol class="list-decimal list-inside space-y-1 text-gray-300">
+            <li>Acesse <a href="https://app.netlify.com/drop" target="_blank" class="text-cyan-400 underline">app.netlify.com/drop</a></li>
+            <li>Arraste e solte esta pasta inteira na janela do navegador.</li>
+            <li>O site é publicado imediatamente com uma URL pública grátis.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="mt-5 text-right">
+        <button onclick="document.getElementById('deploy-modal').classList.add('hidden')" class="px-4 py-2 bg-[#21262d] hover:bg-[#30363d] text-white text-xs font-semibold rounded-lg border border-[#30363d]">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-[#30363d] bg-[#161b22] px-4 py-2 text-center text-xs text-gray-500">
+    DevAgenda CLI — Criado pela equipe com Mentoria Didática de Arthur Wright para democratizar o aprendizado de Git &amp; CLI.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

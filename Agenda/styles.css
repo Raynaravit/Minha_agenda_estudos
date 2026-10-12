@@ -1,0 +1,148 @@
+/* DevAgenda CLI - Custom Styles */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-mono: 'Fira Code', monospace;
+  --font-sans: 'Inter', sans-serif;
+  --color-bg-dark: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-border: #30363d;
+  --color-accent: #2ea043;
+  --color-accent-hover: #3fb950;
+  --color-cli-cyan: #58a6ff;
+  --color-cli-yellow: #d29922;
+  --color-cli-purple: #bc8cff;
+  --color-cli-pink: #f778ba;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-dark);
+  color: #c9d1d9;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Scrollbar for Terminal and Lists */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Terminal Cursor */
+.cli-cursor {
+  display: inline-block;
+  width: 9px;
+  height: 18px;
+  background-color: #58a6ff;
+  vertical-align: text-bottom;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Terminal Window & Lighting */
+.terminal-window {
+  position: relative;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Card hover animation */
+.task-card {
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  border-color: #58a6ff;
+  box-shadow: 0 4px 14px rgba(88, 166, 255, 0.15);
+}
+
+/* Quick command chip */
+.cmd-chip {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.cmd-chip:hover {
+  background-color: #21262d;
+  border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+.cmd-chip:active {
+  transform: scale(0.97);
+}
+
+/* Modal backdrop fade */
+.modal-backdrop {
+  backdrop-filter: blur(6px);
+}
+
+/* Didactic Inspector Highlight Pulse */
+@keyframes didactic-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(88, 166, 255, 0.4);
+    border-color: #58a6ff;
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(88, 166, 255, 0);
+    border-color: #30363d;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(88, 166, 255, 0);
+    border-color: #30363d;
+  }
+}
+
+.didactic-pulse {
+  animation: didactic-glow 1.2s ease-out;
+}
+
+/* Live Terminal Code preview block in Form */
+.terminal-code-preview {
+  background: #090d13;
+  border: 1px solid #30363d;
+  position: relative;
+}
+
+.terminal-code-preview::before {
+  content: "CLI SINTAXE EM TEMPO REAL";
+  position: absolute;
+  top: -9px;
+  left: 12px;
+  background: #161b22;
+  padding: 0 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #58a6ff;
+  border-radius: 3px;
+  border: 1px solid #30363d;
+}
+
+/* Interactive didactic badge */
+.badge-didactic {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.15), rgba(188, 140, 255, 0.15));
+  border: 1px solid rgba(88, 166, 255, 0.3);
+}
